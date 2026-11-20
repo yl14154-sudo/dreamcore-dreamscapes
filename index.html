@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f1f1" />
+    <title>Dreamcore Dreamscapes</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f7f2f1;
+        --ink: #342d39;
+        --muted: #897b88;
+        --line: rgba(75, 60, 77, 0.14);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body { min-height: 100%; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.95), transparent 33rem),
+          linear-gradient(135deg, #f4eef8 0%, var(--paper) 48%, #f3eee9 100%);
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main {
+        min-height: 100svh;
+        padding: clamp(3.5rem, 8vw, 7.5rem) 1.25rem clamp(3rem, 7vw, 6rem);
+      }
+
+      .intro {
+        max-width: 46rem;
+        margin: 0 auto clamp(2.4rem, 5vw, 4.2rem);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.75rem, 3.3vw, 3rem);
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        line-height: 1.08;
+        text-transform: uppercase;
+      }
+
+      .intro p {
+        margin: 1rem 0 0;
+        color: var(--muted);
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: clamp(1rem, 3vw, 2.8rem) clamp(1rem, 3vw, 2.6rem);
+        width: min(100%, 84rem);
+        margin: 0 auto;
+      }
+
+      .tile {
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 1122 / 1402;
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        background: #e9e1e8;
+        box-shadow: 0 1rem 2.8rem rgba(72, 53, 75, 0.08);
+        cursor: pointer;
+        isolation: isolate;
+        transform: translateZ(0);
+        transition: transform 700ms cubic-bezier(.2, .7, .2, 1), box-shadow 700ms ease;
+      }
+
+      .tile:hover,
+      .tile:focus-visible {
+        outline: none;
+      }
+
+      .tile::before {
+        position: absolute;
+        z-index: 3;
+        inset: 1rem 1rem auto;
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.86);
+        content: attr(data-index);
+        font-size: 0.62rem;
+        letter-spacing: 0.15em;
+        mix-blend-mode: screen;
+        pointer-events: none;
+      }
+
+      .tile::after {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(29, 17, 38, 0.12), transparent 24%, transparent 72%, rgba(24, 15, 34, 0.18));
+        content: "";
+        pointer-events: none;
+      }
+
+      .tile img,
+      .tile canvas {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .tile img {
+        z-index: 0;
+        opacity: 1;
+        filter: saturate(0.88) contrast(0.98);
+        transition: opacity 600ms ease, transform 1.3s cubic-bezier(.2, .7, .2, 1);
+      }
+
+      .tile canvas {
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 600ms ease;
+      }
+
+      .tile.is-ready canvas { opacity: 1; }
+
+      .tile:hover img,
+      .tile:focus-visible img { transform: none; }
+
+      .tile-copy {
+        position: absolute;
+        z-index: 4;
+        inset: auto 1rem 1rem;
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.95);
+        text-align: left;
+        text-shadow: 0 1px 12px rgba(26, 16, 31, 0.26);
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      .tile-copy strong {
+        display: block;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1rem, 1.8vw, 1.35rem);
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+
+      .tile-copy span {
+        font-size: 0.58rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 680px) {
+        main { padding-inline: 0.85rem; }
+        .tile-copy { inset-inline: 0.85rem; }
+        .tile::before { inset-inline: 0.85rem; }
+      }
+
+      @media (max-width: 960px) {
+        .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(100%, 63rem); gap: 1.2rem; }
+        .tile-copy { inset-inline: 0.55rem; bottom: 0.55rem; }
+        .tile-copy strong { font-size: 0.82rem; }
+        .tile-copy span { display: none; }
+      }
+
+      @media (max-width: 680px) {
+        .gallery { grid-template-columns: 1fr; gap: 1.15rem; width: min(100%, 30rem); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="intro">
+        <h1>Dreamcore Dreamscapes</h1>
+        <p>Hover to disturb the memory / Touch to enter</p>
+      </header>
+
+      <section class="gallery" aria-label="Dreamcore image collection">
+        <button class="tile" type="button" data-index="01" data-src="images/dreamcore-rabbits.png" aria-label="Open Soft Guardians">
+          <img src="images/dreamcore-rabbits.png" alt="A girl surrounded by giant white rabbits in a pastel meadow" />
+          <canvas aria-hidden="true"></canvas>
+          <span class="tile-copy"><strong>Soft Guardians</strong><span>01 / waking dream</span></span>
+        </button>
+
+        <button class="tile" type="button" data-index="02" data-src="images/dreamcore-balloons.png" aria-label="Open Skyward">
+          <img src="images/dreamcore-balloons.png" alt="A floating white rabbit carried by pastel balloons over a flower field" />
+          <canvas aria-hidden="true"></canvas>
+          <span class="tile-copy"><strong>Skyward</strong><span>02 / weightless</span></span>
+        </button>
+
+        <button class="tile" type="button" data-index="03" data-src="images/dreamcore-tv.png" aria-label="Open Liminal Signal">
+          <img src="images/dreamcore-tv.png" alt="A plush rabbit beside a vintage television in a pastel field" />
+          <canvas aria-hidden="true"></canvas>
+          <span class="tile-copy"><strong>Liminal Signal</strong><span>03 / elsewhere</span></span>
+        </button>
+
+        <button class="tile" type="button" data-index="04" data-src="images/dreamcore-road.png" aria-label="Open The Way Back">
+          <img src="images/dreamcore-road.png" alt="A pastel road with a mirror, vintage television and balloons" />
+          <canvas aria-hidden="true"></canvas>
+          <span class="tile-copy"><strong>The Way Back</strong><span>04 / return path</span></span>
+        </button>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script>
+      (() => {
+        const tiles = [...document.querySelectorAll('.tile')];
+        const shaders = [];
+
+        const vertexShaderSource = `
+          attribute vec2 aPosition;
+          attribute vec2 aUv;
+          varying vec2 vUv;
+          void main() {
+            vUv = aUv;
+            gl_Position = vec4(aPosition, 0.0, 1.0);
+          }
+        `;
+
+        const fragmentShaderSource = `
+          precision highp float;
+          uniform sampler2D uTexture;
+          uniform float uTime;
+          uniform float uProgress;
+          uniform float uHover;
+          uniform vec2 uPointer;
+          varying vec2 vUv;
+
+          void main() {
+            vec2 uv = vUv;
+            vec2 centered = uv - 0.5;
+            float distanceFromCenter = length(centered);
+
+            float reveal = smoothstep(0.0, 1.0, uProgress);
+
+            float breathing = sin((centered.y * 14.0) + uTime * 1.55) * 0.007 * uHover;
+            uv.x += breathing;
+            uv.y += cos((centered.x * 16.0) - uTime * 1.35) * 0.005 * uHover;
+
+            float cursorDistance = length(centered - uPointer);
+            float ripple = sin((cursorDistance * 28.0) - (uProgress * 12.0)) * 0.014 * reveal;
+            uv += normalize(centered - uPointer + 0.0001) * ripple;
+
+            uv.x += sin((uv.y + uPointer.y) * 18.0 + uTime * 1.8) * 0.042 * reveal;
+            uv.y += cos((uv.x + uPointer.x) * 15.0 - uTime * 1.5) * 0.026 * reveal;
+
+            float chromatic = 0.003 + (0.012 * reveal);
+            float red = texture2D(uTexture, uv + vec2(chromatic, 0.0)).r;
+            float green = texture2D(uTexture, uv).g;
+            float blue = texture2D(uTexture, uv - vec2(chromatic, 0.0)).b;
+            vec3 color = vec3(red, green, blue);
+
+            float vignette = smoothstep(0.9, 0.2, distanceFromCenter);
+            color *= mix(0.9, 1.055, vignette);
+            color += vec3(0.025, 0.012, 0.03) * reveal * (1.0 - vignette);
+
+            gl_FragColor = vec4(color, 1.0);
+          }
+        `;
+
+        function compile(gl, type, source) {
+          const shader = gl.createShader(type);
+          gl.shaderSource(shader, source);
+          gl.compileShader(shader);
+          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.warn(gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+          }
+          return shader;
+        }
+
+        function link(gl, vertex, fragment) {
+          const program = gl.createProgram();
+          gl.attachShader(program, vertex);
+          gl.attachShader(program, fragment);
+          gl.linkProgram(program);
+          if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.warn(gl.getProgramInfoLog(program));
+            gl.deleteProgram(program);
+            return null;
+          }
+          return program;
+        }
+
+        class ShaderImage {
+          constructor(tile) {
+            this.tile = tile;
+            this.canvas = tile.querySelector('canvas');
+            this.motion = { progress: 0, hover: 0 };
+            this.pointer = { x: 0, y: 0 };
+            this.pointerTarget = { x: 0, y: 0 };
+            this.active = false;
+            this.time = 0;
+            this.ready = false;
+            this.gl = this.canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false });
+            if (!this.gl) return;
+
+            const vertex = compile(this.gl, this.gl.VERTEX_SHADER, vertexShaderSource);
+            const fragment = compile(this.gl, this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+            this.program = vertex && fragment ? link(this.gl, vertex, fragment) : null;
+            if (!this.program) return;
+
+            this.position = this.gl.getAttribLocation(this.program, 'aPosition');
+            this.uv = this.gl.getAttribLocation(this.program, 'aUv');
+            this.uniforms = {
+              texture: this.gl.getUniformLocation(this.program, 'uTexture'),
+              time: this.gl.getUniformLocation(this.program, 'uTime'),
+              progress: this.gl.getUniformLocation(this.program, 'uProgress'),
+              hover: this.gl.getUniformLocation(this.program, 'uHover'),
+              pointer: this.gl.getUniformLocation(this.program, 'uPointer')
+            };
+
+            this.setupGeometry();
+            this.setupTexture(tile.dataset.src);
+            this.bindEvents();
+            new ResizeObserver(() => this.resize()).observe(this.canvas);
+          }
+
+          setupGeometry() {
+            const gl = this.gl;
+            const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+            const uvs = new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]);
+            this.positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+            this.uvBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, uvs, gl.STATIC_DRAW);
+          }
+
+          setupTexture(source) {
+            const gl = this.gl;
+            this.texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+            const image = new Image();
+            image.onload = () => {
+              gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+              gl.bindTexture(gl.TEXTURE_2D, this.texture);
+              gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+              this.ready = true;
+              this.tile.classList.add('is-ready');
+              this.resize();
+            };
+            image.src = source;
+          }
+
+          bindEvents() {
+            this.tile.addEventListener('pointerenter', () => {
+              this.setHover(1);
+              this.activateEffect();
+            });
+            this.tile.addEventListener('pointerleave', () => this.resetMotion());
+            this.tile.addEventListener('mouseleave', () => this.resetMotion());
+            this.tile.addEventListener('pointermove', (event) => {
+              const rect = this.tile.getBoundingClientRect();
+              this.pointerTarget.x = (event.clientX - rect.left) / rect.width - 0.5;
+              this.pointerTarget.y = (event.clientY - rect.top) / rect.height - 0.5;
+            });
+            this.tile.addEventListener('pointerdown', (event) => {
+              if (event.pointerType !== 'mouse') this.activateEffect();
+            });
+            this.tile.addEventListener('pointerup', (event) => {
+              if (event.pointerType !== 'mouse') this.resetMotion();
+            });
+            this.tile.addEventListener('pointercancel', () => this.resetMotion());
+          }
+
+          setHover(value) {
+            if (!window.gsap) {
+              this.motion.hover = value;
+              return;
+            }
+            gsap.to(this.motion, { hover: value, duration: 0.28, ease: 'power3.out', overwrite: true });
+          }
+
+          activateEffect() {
+            if (this.active) return;
+            this.active = true;
+            if (!window.gsap) {
+              this.motion.progress = 0.5;
+              return;
+            }
+            gsap.to(this.motion, {
+              progress: 0.5,
+              duration: 0.58,
+              ease: 'power3.out',
+              overwrite: true
+            });
+          }
+
+          resetMotion() {
+            this.active = false;
+            this.pointerTarget.x = 0;
+            this.pointerTarget.y = 0;
+            if (!window.gsap) {
+              this.motion.progress = 0;
+              return;
+            }
+            gsap.killTweensOf(this.motion);
+            this.motion.progress = 0;
+            this.motion.hover = 0;
+          }
+
+          resize() {
+            if (!this.gl) return;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const rect = this.canvas.getBoundingClientRect();
+            this.canvas.width = Math.max(1, Math.round(rect.width * dpr));
+            this.canvas.height = Math.max(1, Math.round(rect.height * dpr));
+            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+          }
+
+          render(seconds) {
+            if (!this.gl || !this.ready || !this.program) return;
+            const gl = this.gl;
+            this.time = seconds;
+            this.pointer.x += (this.pointerTarget.x - this.pointer.x) * 0.2;
+            this.pointer.y += (this.pointerTarget.y - this.pointer.y) * 0.2;
+            gl.useProgram(this.program);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+            gl.enableVertexAttribArray(this.position);
+            gl.vertexAttribPointer(this.position, 2, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+            gl.enableVertexAttribArray(this.uv);
+            gl.vertexAttribPointer(this.uv, 2, gl.FLOAT, false, 0, 0);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+            gl.uniform1i(this.uniforms.texture, 0);
+            gl.uniform1f(this.uniforms.time, this.time);
+            gl.uniform1f(this.uniforms.progress, this.motion.progress);
+            gl.uniform1f(this.uniforms.hover, this.motion.hover);
+            gl.uniform2f(this.uniforms.pointer, this.pointer.x, this.pointer.y);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+          }
+        }
+
+        tiles.forEach((tile) => shaders.push(new ShaderImage(tile)));
+
+        function render(time) {
+          const seconds = time * 0.001;
+          shaders.forEach((shader) => shader.render(seconds));
+          requestAnimationFrame(render);
+        }
+
+        requestAnimationFrame(render);
+      })();
+    </script>
+  </body>
+</html>
